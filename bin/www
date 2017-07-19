@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('proyecto-api:server');
 var http = require('http');
+var db = require('mongodb').MongoClient;
 
 /**
  * Get port from environment and store in Express.
@@ -19,15 +20,33 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server;
+var url_conexion = "mongodb://127.0.0.1:27017/proyecto_api";
 
 /**
- * Listen on provided port, on all network interfaces.
- */
+* Solo se va a iniciar la aplicación en caso de que halla conexion
+* a la base de datos y usar la conexion en toda la aplicación.
+*/
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+db.connect(url_conexion, (err, db) => {
+    if (err) {
+      console.log(err);
+    }else {
+      //se setea la variable de db para que pueda ser usada
+      app.set('db',db);
+      //se crea el servidor y se inicializa
+      server = http.createServer(app);
+
+      /**
+       * Listen on provided port, on all network interfaces.
+       */
+
+      server.listen(port);
+      server.on('error', onError);
+      server.on('listening', onListening);
+    }
+});
+
 
 /**
  * Normalize a port into a number, string, or false.

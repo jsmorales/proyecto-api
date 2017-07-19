@@ -9,9 +9,9 @@ var session = require('express-session');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var carrito = require('.routes/carrito')
-var pedidos = require('.routes/pedidos')
-var productos = require('.routes/productos')
+var carrito = require('./routes/carrito');
+var pedidos = require('./routes/pedidos');
+var productos = require('./routes/productos');
 
 var app = express();
 
