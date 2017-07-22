@@ -32,7 +32,7 @@ router.post('/', (req, res, next) => {
     var db = req.app.get('db');
 
     articulos.usuario = {
-      nombre: req.session.nombre
+      nombre: req.session.nombre,
       email: req.session.email
     }
 

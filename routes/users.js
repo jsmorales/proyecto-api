@@ -30,6 +30,11 @@ router.get('/', function(req, res, next) {
 
 });*/
 
+//validar si ya esta autenticado
+router.get('/login', function(req, res, next) {
+  res.render('login.ejs')
+});
+
 router.post('/login', (req, res, next) => {
 
   var autenticado = req.session.autenticado;
@@ -42,7 +47,7 @@ router.post('/login', (req, res, next) => {
     var password = req.body.password
 
     if (!email || !password) {
-      res.status(403).send("Falta el email o es password.")
+      res.status(403).send("Falta el email o el password.")
     }
 
     //verifica email y pass esten en la bd con un user
@@ -51,7 +56,10 @@ router.post('/login', (req, res, next) => {
     var cursor = db.collection(coleccion).find({
       email: email,
       password: crypto.createHash('sha384').update(password,'utf-8').digest()
+      //password: password
     });
+
+
 
     var resultado;
 
@@ -61,13 +69,13 @@ router.post('/login', (req, res, next) => {
 
       //res.send(resultado)
       if (resultado != null) {
-        
+        console.log(resultado);
         //define las variables de session
         req.session.autenticado = true;
         req.session.nombre = resultado.nombre;
         req.session.email = resultado.email;
 
-        res.status(200).send("Login Correcto.")
+        res.status(200).redirect("/")
       }else{
         req.session.autenticado = false;
         res.status(401).send("No Autorizado.")
@@ -82,11 +90,26 @@ router.post('/login', (req, res, next) => {
 
 })
 
+router.get("/logout", (req, res, next) => {
+
+  req.session.autenticado = null;
+  req.session.nombre = undefined;
+  req.session.email = undefined;
+
+  res.redirect("/")
+
+})
+
 //registro de usuarios
 /*se necesita nombre pass y correo
 {nombre: "", password: "", correo: ""}
 */
-router.post('/', function(req, res, next) {
+
+router.get('/signup', function(req, res, next) {
+  res.render('signup.ejs')
+});
+
+router.post('/signup', function(req, res, next) {
 
   var db = req.app.get('db');
 
